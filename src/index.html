@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Betacuck </title>
+        <!-- CSS Imports -->
+        <link rel="stylesheet" href="assets/css/main.css">
+        <!-- Meta Data -->
+        <meta charset="UTF-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge; chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+        <meta name="geo.region" content="GR">
+        <meta name="description" content="Silly drawing game."> <!-- < 500 chars -->
+        <meta name="abstract" content="Silly drawing game."> <!-- < 100 chars -->
+        <meta name="rating" content="General"> 
+    </head>
+    <body>
+        <!-- Intro -->
+        <div class="row">
+            <center>
+                <h1>Betacuck drawing gaym</h1>
+            </center>
+        </div>
+
+        <!-- Navbar -->
+        <div class="wrapper">
+            <div class="sidebar">
+                <h2>Options</h2>
+                <ul>
+                    <li>
+                        <label for="red">R: <input id="opt" type="range" name="r" min="0" max="255" value="255"></label><br>
+                        <label for="green">G: <input id="opt" type="range" name="g" min="0" max="255" value="255"></label><br>
+                        <label for="blue">B: <input id="opt" type="range" name="b" min="0" max="255" value="255"></label><br>
+                        <label for="opacity">O: <input id="opt" type="range" name="opacity" min="0" max="100" value="100"></label><br>
+                        <label for="thickness">T: <input id="opt" type="range" name="b" min="thickness min="1" max="96" value="12"></label><br>
+                        <!-- <span class="rgb_display_r">R: </span><span class="rgb_display_g">G: </span><span class="rgb_display_b">B: </span><br>
+                        <span class="rgb_display_opacity">Opacity: </span><span class="rgb_display_thickness">Thickness: </span> -->
+                    </li>
+                    <li><a href="https://www.betacuckdrawinggaym.com/thegame/profile/"><i class="fas fa-user"></i>Profile</a></li>
+                    <li><a href="#"><i class="fas fa-address-card"></i>Keybinds</a></li>
+                    <li><a href=""><i class="fas fa-project-diagram"></i>Information</a></li>
+                    <li><a href="https://www.cumshitcorp.com/"><i class="fas fa-blog"></i>About</a></li>
+                    <li><a href="https://www.discord.gg/cumshitcorp"><i class="fas fa-address-book"></i>Discord</a></li>
+                    <li><a href="https://www.github.com/sxvaaze" target="_blank"><i class="fas fa-map-pin"></i>Github</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <center>
+                <canvas id="game" width="400" height="400" style="border:3px solid #000"></canvas>
+            </center>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <center>
+                <div class="footer">
+                    <p id="copyright-fuck-you-text">Developed by <span id="issa-me">Sxvaaze</span>. Version: 1.0Pre-A
+                    <br>Find me on <span id="open-source"><a href="https://www.github.com/sxvaaze" target="_blank">github</a></span> (or don't, I really don't give a shit)</p>
+                </div>
+            </center>
+        </footer>
+
+        <script src="index.js"></script>
+    </body>
+</html>
