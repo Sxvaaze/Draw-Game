@@ -37,6 +37,7 @@ const createWindow = () => {
       }
   ])
   Menu.setApplicationMenu(menu);
+  //mainWindow.setResizable(true); Use in future if needed
 }
 
 // This method will be called when Electron has finished
