@@ -7,16 +7,15 @@ let brush = {
     opacity: 0.1, // 10% opacity
     draw: false, // Used to check if drawing mode is on or off
     rgb: [255, 255, 255], // Makes black the default
-    //last_key: 'a', // Last key pressed. Now deprecated, used to be for the undo function (control + z).
     previous: {x: 0, y: 0}, // Used for when connecting a line to an endpoint, this (x,y) pair is the beggining point of the line
     current: {x: 0, y: 0} // Used for when connecting a line to an endpoint, this (x,y) pair is the ending point of the line
 };
 
 let curves = {
     objName: "Curves",
-    points: [],
-    paths: [],
-    redo_stack: []
+    points: [], // A list used as a cache by the draw/stop functions. When the stop function is called, the element is added to the paths list.
+    paths: [], // All paths draw in the canvas. (Every element of this list is a set of moves required to draw the line.) First element is (x_start, y_start) and the last element is (x_end, y_end)
+    redo_stack: [] // A implementation of a stack used for the redo function
 }
 
 canvas.addEventListener('mousedown', start);
@@ -122,24 +121,23 @@ function drawPaths() {
     })
 }
 
-// function drawPathsStack() {
-//     ctx.lineWidth = brush.strokeWeight;
-//     ctx.lineCap = "round";
-//     ctx.strokeStyle = "black";
-//     curves.redo_stack.forEach(path => {
-//         ctx.beginPath();
-//         ctx.moveTo(path[curves.redo_stack.length - 1].x, path[curves.redo_stack.length - 1].y);
-//         for (let i = curves.redo_stack.length - 2; i > -1; i--) {
-//             ctx.lineTo(path[i].x, path[i].y);
-//         }
-//         ctx.stroke();
-//     })
-// }
+function resize(w, h){
+    // Create a temporary canvas obj to cache the pixel data
+    var temp_cnvs = document.createElement('canvas');
+    var temp_cntx = temp_cnvs.getContext('2d');
+    // Set it to the new width & height and draw the current canvas data into it 
+    temp_cnvs.width = w; 
+    temp_cnvs.height = h;
+    temp_cntx.fillStyle = "white";  // the original canvas' background color
+    temp_cntx.fillRect(0, 0, w, h);
+    temp_cntx.drawImage(canvas, 0, 0);
+    // Resize & clear the original canvas and copy back in the cached pixel data
+    canvas.width = w; 
+    canvas.height = h;
+    ctx.drawImage(temp_cnvs, 0, 0);
+    }
 
 window.addEventListener('resize', resizeCanvas);
 function resizeCanvas () {
-    // To-do: make this function return a respective ratio of the resize, and fix canvas being cleared when resizing.
-    //(a): FIX: upon resizing, control z first functions as a UNDO once, but load the canvas that was unloaded upon resizing, lol....
-    canvas.width = window.innerWidth - screen.width / 4;
-    canvas.height = window.innerHeight - screen.height / 8;
+    resize(window.innerWidth - screen.width / 4, window.innerHeight - screen.height / 8);
 }
