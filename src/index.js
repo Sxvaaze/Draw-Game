@@ -3,7 +3,7 @@ let ctx = canvas.getContext("2d");
 
 let brush = {
     objName: "Brush",
-    strokeWeight: 1, // 1w
+    strokeWeight: 2, // 1w
     opacity: 0.1, // 10% opacity
     draw: false, // Used to check if drawing mode is on or off
     rgb: [255, 255, 255], // Makes black the default
@@ -15,7 +15,8 @@ let brush = {
 let curves = {
     objName: "Curves",
     points: [],
-    paths: []
+    paths: [],
+    redo_stack: []
 }
 
 canvas.addEventListener('mousedown', start);
@@ -76,6 +77,11 @@ function catchKeyPress(e) {
                 Undo();
             }
             break;
+        case 'KeyY':
+            if (e.ctrlKey) {
+                Redo();
+            }
+            break;
     }
 }
 
@@ -86,24 +92,48 @@ function stop(e) {
 }
 
 function Undo() {
-    curves.paths.splice(-1, 1);
+    let t;
+    t = curves.paths.splice(-1, 1);
+    curves.redo_stack.push(t);
     drawPaths();
 }
 
+// function Redo() {
+//     let t;
+//     t = curves.redo_stack.splice(-1, 1);
+//     console.log(t);
+//     curves.paths.push(t);
+//     drawPathsStack();
+// }
+
 function drawPaths() {
     clear(false);
-    ctx.lineWidth = brush.strokeWeight * 1.3;
+    ctx.lineWidth = brush.strokeWeight;
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
     curves.paths.forEach(path => {
-        ctx.beginPath();
-        ctx.moveTo(path[0].x,path[0].y);  
-        for (let i = 1; i < path.length; i++) {
-            ctx.lineTo(path[i].x,path[i].y); 
+        for (let i = 0; i < path.length-1; i+=1) {
+            ctx.beginPath();
+            ctx.moveTo(path[i].x, path[i].y);
+            ctx.lineTo(path[i+1].x, path[i+1].y);
+            ctx.stroke();
         }
-        ctx.stroke();
     })
 }
+
+// function drawPathsStack() {
+//     ctx.lineWidth = brush.strokeWeight;
+//     ctx.lineCap = "round";
+//     ctx.strokeStyle = "black";
+//     curves.redo_stack.forEach(path => {
+//         ctx.beginPath();
+//         ctx.moveTo(path[curves.redo_stack.length - 1].x, path[curves.redo_stack.length - 1].y);
+//         for (let i = curves.redo_stack.length - 2; i > -1; i--) {
+//             ctx.lineTo(path[i].x, path[i].y);
+//         }
+//         ctx.stroke();
+//     })
+// }
 
 window.addEventListener('resize', resizeCanvas);
 function resizeCanvas () {
