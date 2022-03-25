@@ -92,19 +92,20 @@ function stop(e) {
 }
 
 function Undo() {
-    let t;
-    t = curves.paths.splice(-1, 1);
-    curves.redo_stack.push(t);
-    drawPaths();
+    if (curves.paths.length > 0) {
+        let t = curves.paths.splice(-1, 1);
+        curves.redo_stack.push(t);
+        drawPaths();
+    }
 }
 
-// function Redo() {
-//     let t;
-//     t = curves.redo_stack.splice(-1, 1);
-//     console.log(t);
-//     curves.paths.push(t);
-//     drawPathsStack();
-// }
+function Redo() {
+    if (curves.redo_stack.length > 0) {
+        let s = curves.redo_stack.splice(-1, 1);
+        curves.paths.push(s[0][0]);
+        drawPaths();
+    }
+}
 
 function drawPaths() {
     clear(false);
@@ -112,7 +113,7 @@ function drawPaths() {
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
     curves.paths.forEach(path => {
-        for (let i = 0; i < path.length-1; i+=1) {
+        for (let i = 0; i < path.length-1; i++) {
             ctx.beginPath();
             ctx.moveTo(path[i].x, path[i].y);
             ctx.lineTo(path[i+1].x, path[i+1].y);
