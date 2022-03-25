@@ -1,5 +1,6 @@
 let canvas = document.getElementById("game");
 let ctx = canvas.getContext("2d");
+resize(window.innerWidth - screen.width / 4, window.innerHeight - screen.height / 8);
 
 let brush = {
     objName: "Brush",
@@ -63,6 +64,7 @@ function clear(flush) {
     if (flush) {
         curves.points = [];
         curves.paths = [];
+        curves.redo_stack = [];
     }
 }
 
@@ -135,7 +137,7 @@ function resize(w, h){
     canvas.width = w; 
     canvas.height = h;
     ctx.drawImage(temp_cnvs, 0, 0);
-    }
+}
 
 window.addEventListener('resize', resizeCanvas);
 function resizeCanvas () {
