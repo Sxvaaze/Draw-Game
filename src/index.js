@@ -2,12 +2,34 @@ let canvas = document.getElementById("game");
 let ctx = canvas.getContext("2d");
 resize(window.innerWidth - screen.width / 4, window.innerHeight - screen.height / 8);
 
+// Used as a parser to convert the brush.rgb attribute to a hex
+function getterRGBA(rgba) {
+    return "rgba(" + rgba[0].toString() + ", " + rgba[1].toString() + ", " + rgba[2].toString() + ", " + rgba[3].toString() + ")";
+}
+
+function updateBrush() {
+    ctx.lineWidth = brush.strokeWeight;
+    ctx.lineCap = brush.lineCap;
+    ctx.strokeStyle = getterRGBA(brush.rgba);
+}
+
+function sliderGetterSetter() {
+    let red_slider = document.getElementsByName('red_slider')[0];
+    let green_slider = document.getElementsByName('green_slider')[0];
+    let blue_slider = document.getElementsByName('blue_slider')[0];
+    let opacity_slider = document.getElementsByName('opacity_slider')[0];
+    let thickness_slider = document.getElementsByName('thickness_slider')[0];
+    brush.strokeWeight = parseInt(thickness_slider.value);
+    brush.rgba = [parseInt(red_slider.value), parseInt(green_slider.value), parseInt(blue_slider.value), parseInt(opacity_slider.value) / 100];
+    updateBrush();
+}
+
 let brush = {
     objName: "Brush",
-    strokeWeight: 2, // 1w
-    opacity: 0.1, // 10% opacity
+    strokeWeight: 2, // 2w
+    lineCap: "round",
     draw: false, // Used to check if drawing mode is on or off
-    rgb: [255, 255, 255], // Makes black the default
+    rgba: [150, 150, 150, 1], // Makes black the default
     previous: {x: 0, y: 0}, // Used for when connecting a line to an endpoint, this (x,y) pair is the beggining point of the line
     current: {x: 0, y: 0} // Used for when connecting a line to an endpoint, this (x,y) pair is the ending point of the line
 };
@@ -16,7 +38,11 @@ let curves = {
     objName: "Curves",
     points: [], // A list used as a cache by the draw/stop functions. When the stop function is called, the element is added to the paths list.
     paths: [], // All paths draw in the canvas. (Every element of this list is a set of moves required to draw the line.) First element is (x_start, y_start) and the last element is (x_end, y_end)
-    redo_stack: [] // A implementation of a stack used for the redo function
+    redo_stack: [], // A implementation of a stack used for the redo function
+    previous_rgbas: [], // All RGBA sets corresponding to the paths.
+    previous_thickness: [],
+    redo_previous_rgbas: [],
+    redo_previous_thickness: []
 }
 
 canvas.addEventListener('mousedown', start);
@@ -25,6 +51,7 @@ canvas.addEventListener('mouseup', stop);
 window.addEventListener('keydown', catchKeyPress);
 
 function start (e) {
+    sliderGetterSetter();
     brush.previous = {x: brush.current.x, y: brush.current.y};
     brush.draw = true;
     
@@ -44,9 +71,6 @@ function oMousePos(e) {
 
 function draw (e) {
     if (!brush.draw) return;
-    ctx.lineWidth = brush.strokeWeight;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "black";
 
     brush.previous = {x: brush.current.x, y: brush.current.y};
     brush.current = oMousePos(e);
@@ -65,6 +89,8 @@ function clear(flush) {
         curves.points = [];
         curves.paths = [];
         curves.redo_stack = [];
+        curves.previous_rgbas = [];
+        curves.previous_thickness = [];
     }
 }
 
@@ -89,38 +115,51 @@ function catchKeyPress(e) {
 function stop(e) {
     brush.draw = false;
     curves.paths.push(curves.points);
+    curves.previous_rgbas.push(brush.rgba);
+    curves.previous_thickness.push(brush.strokeWeight);
     ctx.beginPath();
 }
 
 function Undo() {
     if (curves.paths.length > 0) {
-        let t = curves.paths.splice(-1, 1);
+        let t = curves.paths.pop();
+        let s = curves.previous_rgbas.pop();
+        let u = curves.previous_thickness.pop();
         curves.redo_stack.push(t);
+        curves.redo_previous_rgbas.push(s);
+        curves.redo_previous_thickness.push(u);
         drawPaths();
     }
 }
 
 function Redo() {
     if (curves.redo_stack.length > 0) {
-        let s = curves.redo_stack.splice(-1, 1);
-        curves.paths.push(s[0][0]);
+        let t = curves.redo_stack.pop();
+        let s = curves.redo_previous_rgbas.pop();
+        let u = curves.redo_previous_thickness.pop();
+        curves.paths.push(t);
+        curves.previous_rgbas.push(s);
+        curves.previous_thickness.push(u);
         drawPaths();
     }
 }
 
+// Bug with Undo method. When undo-ing and changing colours, the drawPaths() function will draw all previous paths with the new colour.
 function drawPaths() {
     clear(false);
-    ctx.lineWidth = brush.strokeWeight;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "black";
-    curves.paths.forEach(path => {
-        for (let i = 0; i < path.length-1; i++) {
+    updateBrush();
+    for (let j = curves.paths.length - 1; j >= 0; j--) {
+        path = curves.paths[j];
+        console.log(path);
+        ctx.strokeStyle = getterRGBA(curves.previous_rgbas[j]);
+        ctx.lineWidth = curves.previous_thickness[j];
+        for (let i = 0; i < path.length - 1; i++) {
             ctx.beginPath();
             ctx.moveTo(path[i].x, path[i].y);
             ctx.lineTo(path[i+1].x, path[i+1].y);
             ctx.stroke();
         }
-    })
+    }
 }
 
 function resize(w, h){
