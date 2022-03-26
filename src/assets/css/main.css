@@ -13,6 +13,9 @@
 
 :root {
     --main-bg: #5D3FD3;
+    --secondary-bg: #CBC3E3;
+    --row-bg: #F9423A;
+    --row-final-bg: #f53347;
 }
 
 * {
@@ -24,8 +27,13 @@
     font-family: 'Josefin Sans', sans-serif;
 }
 
+.row {
+    background: linear-gradient(90deg, var(--row-bg) 40%, var(--row-final-bg) 100%);
+    margin-top: 1%;
+}
+
 body {
-    background-color: #f3f5f9;
+    background: linear-gradient(90deg, var(--row-bg) 40%, var(--row-final-bg) 100%);
 }
 
 .wrapper {
@@ -34,11 +42,12 @@ body {
 }
 
 .wrapper .sidebar {
-    width: 200px;
+    width: 12vw;
     height: 100%;
     background: var(--main-bg);
     padding: 30px 0px;
     position: fixed;
+    margin-top: -2.65%;
 }
 
 .wrapper .sidebar h2 {
@@ -136,6 +145,9 @@ br {
 
 #copyright-fuck-you-text {
     font-weight: 600;
+}
+footer {
+     margin-top: 3%;
 }
 
 footer a {
