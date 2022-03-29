@@ -50,7 +50,9 @@ let brush = {
     draw: false, // Used to check if drawing mode is on or off
     rgba: [150, 150, 150, 1], // Makes black the default
     previous: {x: 0, y: 0}, // Used for when connecting a line to an endpoint, this (x,y) pair is the beggining point of the line
-    current: {x: 0, y: 0} // Used for when connecting a line to an endpoint, this (x,y) pair is the ending point of the line
+    current: {x: 0, y: 0}, // Used for when connecting a line to an endpoint, this (x,y) pair is the ending point of the line
+    prev_undos: 0,
+    redos: 0
 };
 
 let curves = {
@@ -154,6 +156,8 @@ function catchKeyPress(e) {
 // Undo Feature (ctrl+z)
 function Undo() {
     if (curves.paths.length > 0) {
+        brush.redos = 0;
+        brush.prev_undos++;
         let t = curves.paths.pop();
         let s = curves.previous_rgbas.pop();
         let u = curves.previous_thickness.pop();
@@ -167,6 +171,11 @@ function Undo() {
 // Redo Feature (ctrl+y)
 function Redo() {
     if (curves.redo_stack.length > 0) {
+        brush.redos++;
+        if (brush.redos > brush.prev_undos) {
+            brush.prev_undos = brush.redos = 0;
+            return;
+        }
         let t = curves.redo_stack.pop();
         let s = curves.redo_previous_rgbas.pop();
         let u = curves.redo_previous_thickness.pop();
