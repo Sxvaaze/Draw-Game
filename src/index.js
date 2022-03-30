@@ -131,6 +131,8 @@ function clear(flush) {
         curves.redo_stack = [];
         curves.previous_rgbas = [];
         curves.previous_thickness = [];
+        brush.prev_undos = 0;
+        brush.redos = 0;
     }
 }
 
